@@ -114,7 +114,7 @@ var seedData = [
 	{
 		password: config.app.pass,
 		name: {first: 'Rakesh', last: 'Gandhi'},
-		contactInfo: {email: 'amit.handa@geminisolutions.in', phone: 2, address: "address"}
+		contactInfo: {email: 'rakesh.gandhi@geminisolutions.in', phone: 2, address: "address"}
 	},
 	{
 		password: config.app.pass,
