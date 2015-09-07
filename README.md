@@ -85,10 +85,11 @@ For debugging, asynchronous code, put breakpoints at co library gen.next, fn.cal
 ## Misc
 
 ### References
-* [javascript ecmascript 6 features](https://github.com/lukehoban/es6features)
+* [Overview] (https://en.wikipedia.org/wiki/Node.js)
 * [nodejs api](https://iojs.org/api/)
 * [find packages](http://npmsearch.com/)
 * [tutorials](http://nodeschool.io/)
+* [javascript ecmascript 6 features](https://github.com/lukehoban/es6features)
 
 ### Create ssh keys
 
