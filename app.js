@@ -53,7 +53,8 @@ function initDB(config) {
 		var seedModel = function * (modelName) {
 			l.info("Seeding %s", modelName);
 			var Model = mongoose.model(modelName);
-			yield Model.remove({}).exec();
+			l.info('Model info: %j', Model);
+			yield Model.find({}).remove().exec();
 			var saveDoc = function * (data) {
 				var mi = new Model(data);
 				yield mi.save();
@@ -70,11 +71,10 @@ function initDB(config) {
 			fs.readdirSync(config.app.models_path).forEach(function (file) {
 				l.info('Model File: ', config.app.models_path + '/' + file);
 				if (~file.indexOf('js')) {
-					mongoose.models[file.substring( 0, file.length-3 )] = require(config.app.models_path + '/' + file);
+					require(config.app.models_path + '/' + file);
 				}
 			});
 
-			l.info('Mongoose models: ', mongoose.models);
 			for (var m in mongoose.models) {
 				yield seedModel(m);
 			}
