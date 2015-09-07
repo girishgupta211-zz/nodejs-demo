@@ -4,13 +4,10 @@
 var bcrypt = require( '../utils/bcrypt_thunk' ),
 	parse = require('koa-better-body'),
 	util = require('util'),
-	mongodb = require('mongodb'),
 	mongoose = require('mongoose'),
 	l = require( '../logger' ).root.child( {'module': __filename.substring(__dirname.length+1, __filename.length-3)} ),
 	config = require('../config/config'),
 	Employee = mongoose.model('Employee');
-
-var logmeta = {};
 
 // register koa routes
 exports.init = function (app) {
@@ -25,13 +22,19 @@ function *getEmp(next) {
 	try {
 		var id = this.params.id;
 
-		l.info("get emp: %s request from emp: %s", id, logmeta );
+		l.info("get emp: %s request from emp: %s", id );
 
 		var emp = yield Employee.findOne({_id: id}).exec();
+
+		if(emp)
+			emp = emp.toJSON();
+		else
+			this.throw('Could not find the employee', 400);
 
 		this.body = emp;
 		this.status = 200;
 		yield next;
+
 	} catch(err){
 		this.status = err.status || 500;
 		this.body = err.message;
@@ -41,26 +44,26 @@ function *getEmp(next) {
 
 /** * Updates emp <id>. */
 function *addEmp(next) {
-	var updatedEmp;
 
 	try {
 		var empDesc = this.request.body.fields;
-		l.info("add emp request: ", empDesc, logmeta );
+		l.info("add emp request: ", empDesc );
 
-		empDesc.modified = new Date();
-		var newEmp = yield Employee.findByIdAndUpdate(
-			{_id: id},
-			{$set: empDesc},
-			{new: true}
-		).exec();
+		var newEmp = new Employee(empDesc);
+		var saveResult = yield newEmp.save();
+		if(saveResult)
+			saveResult = saveResult.toJSON();
+		else
+			this.throw('Could not create a new employee', 400);
 
 		this.status = 201;
-		this.body = newEmp;
+		this.body = saveResult;
 
-		l.info("updated emp ", newEmp, logmeta );
+		l.info("created emp ", newEmp );
 
 		yield next;
 	} catch (err) {
+
 		this.status = err.status || 500;
 		this.body = err.message;
 		this.app.emit('error', err, this);
@@ -72,19 +75,22 @@ function *updateEmp(next) {
 	try {
 		var id = this.params.id;
 		var empDesc = this.request.body.fields;
-		l.info("update emp request: ", empDesc, logmeta );
+		l.info("update emp request: ", empDesc );
 
-		empDesc.modified = new Date();
 		var updatedEmp = yield Employee.findByIdAndUpdate(
 			{_id: id},
 			{$set: empDesc},
 			{new: true}
-		).select('_id modified').exec();
+		).exec();
+		if(updatedEmp)
+			updatedEmp = updatedEmp.toJSON();
+		else
+			this.throw('Could not update the details of employee', 400);
 
 		this.status = 200;
 		this.body = updatedEmp;
 
-		l.info("updated emp ", updatedEmp, logmeta );
+		l.info("updated emp ", updatedEmp );
 
 		yield next;
 	} catch (err) {
@@ -97,13 +103,15 @@ function *updateEmp(next) {
 /** * Delete emp <id>. */
 function *removeEmp(next) {
 	try{
-		var emp = this.params.id;
-		var results;
+		var id = this.params.id;
+		var result = yield Employee.findByIdAndRemove({_id: id}).exec();
+		if(result)
+			result = result.toJSON();
+		else
+			this.throw('Could not delete the employee', 400);
 
-		results = yield Employee.findByIdAndRemove({_id: emp._id}).exec();
-
-		l.info("delete res: ", results, logmeta );
-		this.status = 204;
+		l.info("delete res: ", result );
+		this.status = 200;
 
 		yield next;
 	} catch(err) {
