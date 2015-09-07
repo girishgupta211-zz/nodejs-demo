@@ -3,41 +3,36 @@
   "version": "0.1.0",
   "private": true,
   "description": "gemini nodejs server",
-  "homepage" : "www.geminisolutions.com",
-  "bugs" : {
-    "url" : "https://mis.geminisolutions.in"
+  "homepage": "www.geminisolutions.com",
+  "bugs": {
+    "url": "https://mis.geminisolutions.in"
   },
-  "license" : "Copyright, Gemini Solutions",
-
+  "license": "Copyright, Gemini Solutions",
   "author": {
     "name": "manav",
-    "email" : "havishhuda@gmail.com",
+    "email": "havishhuda@gmail.com",
     "url": "http://www.geminisolutions.com/"
   },
-  "main" : "index.js",
-
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:havishhuda/nodejs-demo.git"
   },
-
   "engines": {
     "node": ">=0.11.14"
   },
-
   "scripts": {
     "main": "node --harmony-arrow-functions --harmony-arrays app.js",
     "start": "gulp watch",
     "test": "node-debug --nodejs --harmony-arrow-functions grunt test coveralls"
   },
-
   "dependencies": {
+    "bcrypt": "^0.8.5",
+    "bunyan": "~1",
     "co": "~4",
-    "koa" : "latest",
-    "mongodb": "latest",
-    "mongoose": "latest",
-
+    "koa": "latest",
     "lodash": "~3",
-    "bunyan": "~1"
+    "mongodb": "latest",
+    "mongoose": "latest"
   }
 }

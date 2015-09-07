@@ -7,45 +7,26 @@ var path = require('path'),
 var baseConfig = {
 	app: {
 		root: path.normalize(__dirname + '/../..'),
-		env: process.env.NODE_ENV,
+		env: process.env.NODE_ENV || 'dev'
 	}
 };
 
 // environment specific config overrides
 var platformConfig = {
-	development: {
-		log: {
-			level : 'debug',
-			path: __dirname + '/logs/demo.log'
-		},
-		app: {
-			port: 9595
-		},
-		mongo: {
-			seed : false,
-			url: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://127.0.0.1:27017/gem-demo'
-		}
+	log: {
+		level: 'debug',
+		path: __dirname + '/logs/demo.log'
 	},
-
-	test: {
-		app: {
-			port: 3001
-		},
-		mongo: {
-			url: 'mongodb://127.0.0.1:27017/gem-demo'
-		}
+	app: {
+		port: 9595,
+		pass: 'Gemini@123',
+		models_path: __dirname + '/models'
 	},
-
-	production: {
-		app: {
-			port: process.env.PORT || 3000,
-			cacheTime: 7 * 24 * 60 * 60 * 1000 /* default caching time (7 days) for static files, calculated in milliseconds */
-		},
-		mongo: {
-			url: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://127.0.0.1:27017/gem-demo'
-		}
+	mongo: {
+		seed: true,
+		url: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://127.0.0.1:27017/nodejs-demo'
 	}
 };
 
 // override the base configuration with the platform specific values
-module.exports = _.merge(baseConfig, platformConfig[baseConfig.app.env || (baseConfig.app.env = 'development')]);
+module.exports = _.merge(baseConfig, platformConfig);

@@ -3,67 +3,55 @@
 var config = require('./config' );
 var logger = require( './logger' );
 logger.init( config );
+
 var l = logger.root.child( {'module': __filename.substring(__dirname.length+1, __filename.length-3)} );
-
-var mongoose = require('mongoose');
-var co = require('co'),
-	fs = require('fs');
-
 process.on( 'uncaughtException', ( err ) => {
 	l.error( err, "uncaught Exception" ); });
 
 process.on( 'uncaughtRejection', ( err ) => {
 	l.error( err, "uncaught Rejection" ); });
 
-var p = initDB(config);
-
-var fs = require('fs'),
+var mongoose = require('mongoose'),
+	co = require('co'),
+	fs = require('fs'),
 	util = require('util'),
-	_ = require('lodash'),
-	koa = require('koa'),
-	koaConfig = require('./server/config/koa');
+	koa = require('koa');
+
+var p = initDB(config);
 
 /** * create server, configure the router middleware */
 p.then(function () {
-	l.info("server starting", logmeta);
-
+	l.info("Initiating KOA");
 	var app = module.exports = koa();
 
 	app.init = co.wrap(function *() {
-		l.info("initiating app", logmeta);
-
-		/** * Configure koa for authentication */
-		koaConfig(app, passport);
-
-		/** * create http and websocket servers here and start listening for requests */
+		l.info("Initiating web server with configuration: %j", config);
 		app.server = app.listen(config.app.port);
-
-		l.info('Environment: ' + config.app.env, logmeta);
-		if (config.app.env !== 'test') {
-			l.info('socialdoor-server listening on port ' + config.app.port, logmeta);
-		}
 	});
 
 	/** * auto init if this app is not being initialized by another module (i.e. using require('./app').init();) */
 	if (!module.parent) {
 		return app.init();
 	}
-}).catch(function (onerr) {
-	l.error( onerr, "app err", logmeta);
+
+}).catch(function (error) {
+	l.error( "Server error : ", error);
 });
 
 function initDB(config) {
+	l.info('Initiating connection with Mongo DB');
 	mongoose.connect(config.mongo.url);
 	mongoose.connection.on('disconnected', function (err) {
-		l.error(err, 'mongoose db disconnected %j', logmeta);
+		l.error(err, 'mongoose db disconnected %j');
 	});
 
 	/** * To display the MongoDB query execution plan */
-	mongoose.set('debug', false);
+	mongoose.set('debug', true);
 
+	l.info('Seed value: ', config.mongo.seed);
 	if (config.mongo.seed) {
 		var seedModel = function * (modelName) {
-			l.info("seeding %s", modelName, logmeta);
+			l.info("Seeding %s", modelName);
 			var Model = mongoose.model(modelName);
 			yield Model.remove({}).exec();
 			var saveDoc = function * (data) {
@@ -77,6 +65,16 @@ function initDB(config) {
 		};
 
 		p = co(function *() {
+			l.info('Loading model files from dir: %s', config.app.models_path);
+
+			fs.readdirSync(config.app.models_path).forEach(function (file) {
+				l.info('Model File: ', config.app.models_path + '/' + file);
+				if (~file.indexOf('js')) {
+					mongoose.models[file.substring( 0, file.length-3 )] = require(config.app.models_path + '/' + file);
+				}
+			});
+
+			l.info('Mongoose models: ', mongoose.models);
 			for (var m in mongoose.models) {
 				yield seedModel(m);
 			}
