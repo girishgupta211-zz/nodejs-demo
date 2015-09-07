@@ -15,12 +15,12 @@ var baseConfig = {
 var platformConfig = {
 	log: {
 		level: 'debug',
-		path: __dirname + '/logs/demo.log'
+		path: __dirname + '/../logs/demo.log'
 	},
 	app: {
 		port: 9595,
 		pass: 'Gemini@123',
-		models_path: __dirname + '/models'
+		models_path: __dirname + '/../models'
 	},
 	mongo: {
 		seed: true,

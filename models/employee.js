@@ -1,14 +1,8 @@
-/**
- * Author:   Amit Handa
- * Modified: Manav Dahra    Date:    19/05/2015
- *
- * Dependencies
- */
 var genSalt = require('../utils/bcrypt_thunk').genSalt(), // version that supports yields
 	hash = require('../utils/bcrypt_thunk').hash(),
 	compare = require('../utils/bcrypt_thunk').compare(),
 	l = require( '../logger' ).root.child( { 'module' : __filename.substring( __dirname.length+1, __filename.length-3 ) }),
-	config = require('../config'),
+	config = require('../config/config'),
 	mongoose = require('mongoose'),
 	co = require('co'),
 	util = require('util'),
@@ -40,7 +34,6 @@ var EmployeeSchema = new Schema({
 		}
 	},
 	{
-		strict: false,
 		toJSON: {
 			transform: function (doc, ret, options) {
 
@@ -51,9 +44,7 @@ var EmployeeSchema = new Schema({
 		}
 	});
 
-/**
- * Middlewares
- */
+/** * Middlewares */
 EmployeeSchema.pre('save', function (done) {
 	// only hash the password if it has been modified (or is new)
 	if (!this.isModified('password')) {
@@ -81,23 +72,19 @@ EmployeeSchema.pre('save', function (done) {
 	l.info('Done pre-save');
 });
 
-/**
- * Methods
- */
+/** * Methods */
 EmployeeSchema.methods.comparePassword = function * (candidatePassword) {
 	return yield compare(candidatePassword, this.password);
 };
 
-/**
- * Statics
- */
+/** * Statics */
 EmployeeSchema.statics.passwordMatches = function * (email, password) {
-	var user = yield this.findOne({'contactInfo.email': email.toLowerCase()}).exec();
-	if (!user) throw new Error('Employee not found');
+	var emp = yield this.findOne({'contactInfo.email': email.toLowerCase()}).exec();
+	if (!emp) throw new Error('Employee not found');
 
-	if (yield user.comparePassword(password)) {
+	if (yield emp.comparePassword(password)) {
 		l.debug("password match", logmeta );
-		return user;
+		return emp;
 	}
 
 	l.debug("passwords dont match", logmeta );

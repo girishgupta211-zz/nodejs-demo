@@ -30,7 +30,13 @@
     "bcrypt": "^0.8.5",
     "bunyan": "~1",
     "co": "~4",
+
     "koa": "latest",
+    "koa-logger": "latest",
+    "koa-router" : "latest",
+    "koa-response-time": "latest",
+    "koa-better-body": "latest",
+
     "lodash": "~3",
     "mongodb": "latest",
     "mongoose": "latest"

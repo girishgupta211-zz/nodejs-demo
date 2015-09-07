@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('./config' );
+var config = require('./config/config' );
 var logger = require( './logger' );
 logger.init( config );
 
@@ -15,7 +15,8 @@ var mongoose = require('mongoose'),
 	co = require('co'),
 	fs = require('fs'),
 	util = require('util'),
-	koa = require('koa');
+	koa = require('koa'),
+	koaConfig = require('./config/koa');
 
 var p = initDB(config);
 
@@ -23,6 +24,7 @@ var p = initDB(config);
 p.then(function () {
 	l.info("Initiating KOA");
 	var app = module.exports = koa();
+	koaConfig( app );
 
 	app.init = co.wrap(function *() {
 		l.info("Initiating web server with configuration: %j", config);
@@ -33,7 +35,6 @@ p.then(function () {
 	if (!module.parent) {
 		return app.init();
 	}
-
 }).catch(function (error) {
 	l.error( "Server error : ", error);
 });
@@ -53,8 +54,7 @@ function initDB(config) {
 		var seedModel = function * (modelName) {
 			l.info("Seeding %s", modelName);
 			var Model = mongoose.model(modelName);
-			l.info('Model info: %j', Model);
-			yield Model.find({}).remove().exec();
+			yield Model.remove({}).exec();
 			var saveDoc = function * (data) {
 				var mi = new Model(data);
 				yield mi.save();
@@ -75,6 +75,7 @@ function initDB(config) {
 				}
 			});
 
+			l.info('Mongoose models: ', mongoose.models);
 			for (var m in mongoose.models) {
 				yield seedModel(m);
 			}

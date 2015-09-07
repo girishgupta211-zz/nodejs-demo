@@ -34,6 +34,19 @@ sudo update-rc.d mongod defaults
 sudo service mongod start
 ```
 
+## Testing
+
+### Get Emp details
+
+curl -i http://localhost:9595/v1/emp/55ed5a6fbb4307b7599b527f
+
+### Update an Emp
+
+### Create an Emp
+curl -i http://localhost:9595/v1/emp -d '{ "password" : "ah@123", "name" : { "first" : "amit", "last" : "handa" }, "email" : "ah@geminisolutions.com", "phone" : 9711993235, "gender" : 1, "dob" : 0, address" : "XXXXX, Delhi" }' -X POST -H 'Content-Type: application/json'
+
+### Delete an Emp
+
 ## Debugging
 
 * Install node-inspector :
