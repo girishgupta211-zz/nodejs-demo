@@ -1,6 +1,8 @@
 ## demo-server
 Server based on iojs, koa(web framework), mongoose(ORM for mongo) supporting REST
 
+## Installation
+
 ### node
 Follow this [tutorial]( https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-an-ubuntu-14-04-server )
 ```bash
@@ -29,23 +31,42 @@ and [this](https://www.digitalocean.com/community/tutorials/how-to-install-mongo
 sudo update-rc.d mongod defaults
 ```
 
+## start
+
 ### mongo
 ```bash
 sudo service mongod start
+```
+
+### server
+```bash
+node --harmony-arrays --harmony-arrow-functions app.js
 ```
 
 ## Testing
 
 ### Get Emp details
 
+```bash
 curl -i http://localhost:9595/v1/emp/55ed5a6fbb4307b7599b527f
+```
 
 ### Update an Emp
 
+```bash
+curl -i http://localhost:9595/v1/emp -d '{ "email" : "amit.handa@geminisolutions.com" }' -X PUT -H 'Content-Type: application/json'
+```
+
 ### Create an Emp
+```bash
 curl -i http://localhost:9595/v1/emp -d '{ "password" : "ah@123", "name" : { "first" : "amit", "last" : "handa" }, "email" : "ah@geminisolutions.com", "phone" : 9711993235, "gender" : 1, "dob" : 0, address" : "XXXXX, Delhi" }' -X POST -H 'Content-Type: application/json'
+```
 
 ### Delete an Emp
+```bash
+curl -i http://localhost:9595/v1/emp/55ed5a6fbb4307b7599b527f -X DELETE
+```
+
 
 ## Debugging
 

@@ -22,7 +22,7 @@ var p = initDB(config);
 
 /** * create server, configure the router middleware */
 p.then(function () {
-	l.info("Initiating KOA");
+	l.info("Initiating koa");
 	var app = module.exports = koa();
 	koaConfig( app );
 
@@ -47,7 +47,7 @@ function initDB(config) {
 	});
 
 	/** * To display the MongoDB query execution plan */
-	mongoose.set('debug', true);
+	mongoose.set('debug', false);
 
 	l.info('Seed value: ', config.mongo.seed);
 	if (config.mongo.seed) {
@@ -75,7 +75,6 @@ function initDB(config) {
 				}
 			});
 
-			l.info('Mongoose models: ', mongoose.models);
 			for (var m in mongoose.models) {
 				yield seedModel(m);
 			}
