@@ -8,11 +8,11 @@ var genSalt = require('../utils/bcrypt_thunk').genSalt(), // version that suppor
 	hash = require('../utils/bcrypt_thunk').hash(),
 	compare = require('../utils/bcrypt_thunk').compare(),
 	l = require( '../logger' ).root.child( { 'module' : __filename.substring( __dirname.length+1, __filename.length-3 ) }),
-	config = require('../config');
+	config = require('../config'),
 	mongoose = require('mongoose'),
-	Schema = mongoose.Schema,
 	co = require('co'),
-	util = require('util');
+	util = require('util'),
+	Schema = mongoose.Schema;
 
 var logmeta = {};
 
@@ -57,12 +57,16 @@ var EmployeeSchema = new Schema({
 EmployeeSchema.pre('save', function (done) {
 	// only hash the password if it has been modified (or is new)
 	if (!this.isModified('password')) {
+		l.info('Password not changed!');
 		return done();
 	}
+	l.info('Pre save middle ware');
 	co.wrap(function * () {
 			try {
 				var salt = yield genSalt();
+				l.info('salt: ', salt);
 				var hash = yield hash(this.password, salt);
+				l.info('hash: ', hash);
 				this.password = hash;
 				this.email = this.email.toLowerCase();
 				Promise.resolve(true);
@@ -74,6 +78,7 @@ EmployeeSchema.pre('save', function (done) {
 	).call(this).then(done, function (err) {
 			done(err)
 	});
+	l.info('Done pre-save');
 });
 
 /**
