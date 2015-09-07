@@ -23,6 +23,7 @@ Follow this [tutorial](http://docs.mongodb.org/manual/tutorial/install-mongodb-o
 and [this](https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-14-04 )
 
 * comment out bind_ip in /etc/mongod.conf to bind mongo to all interfaces
+* just a comment
 
 ```bash
 sudo update-rc.d mongod defaults
